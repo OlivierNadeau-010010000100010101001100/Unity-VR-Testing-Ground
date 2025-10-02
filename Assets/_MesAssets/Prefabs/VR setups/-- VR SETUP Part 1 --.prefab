@@ -5270,7 +5270,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   m_PhysicsTriggerInteraction: 1
-  m_CastRadius: 0.1
+  m_CastRadius: -7.29
 --- !u!114 &1012936373787394391
 MonoBehaviour:
   m_ObjectHideFlags: 0
