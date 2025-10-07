@@ -31,11 +31,10 @@ public class VRGunManager : MonoBehaviour
                 Debug.Log($"[VR] Cible touchée : {hit.collider.name}");
 
                 // destruction de la  balloon touché
-                Destroy(hit.collider.gameObject);
-
                 if (BallonShooter_GameManager.instance != null)
                 {
                     BallonShooter_GameManager.instance.ballonPopCount();
+                    hit.collider.GetComponent<BallonPop>().Sound();
                 }
             }
         }

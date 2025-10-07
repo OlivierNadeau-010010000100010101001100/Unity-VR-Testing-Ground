@@ -8,13 +8,13 @@ public class BallonPop : MonoBehaviour
     [Range(0f, 1f)]
     public float volume = 1.0f;
 
-    void OnDestroy()
+    public void Sound()
     {
-        // Vérifie si un clip est assigné
         if (destructionSound != null)
         {
             // Joue le son à la position actuelle de l'objet
             AudioSource.PlayClipAtPoint(destructionSound, transform.position, volume);
+            gameObject.SetActive(false);
         }
     }
 }
