@@ -3,7 +3,8 @@ using UnityEngine;
 
 public class BallonShooter_GameManager : MonoBehaviour
 {
-    [SerializeField] private GameObject _gun;
+    [SerializeField] private GameObject _gunPrefab;
+    private GameObject _gunInstance;
 
     private GameObject[] _balloonsTable;
 
@@ -35,23 +36,23 @@ public class BallonShooter_GameManager : MonoBehaviour
 
     private void Start()
     {
-        _positionStartGun = _gun.transform.localPosition;
-        _rotationStartGun = _gun.transform.localRotation;
+        GameObject startingPoint = GameObject.FindGameObjectWithTag("StartingPoint");
+        if (startingPoint == null)
+        {
+            return;
+        }
 
-        // Récupère tous les ballons avec le tag "Ballon"
+        _gunInstance = Instantiate(_gunPrefab, startingPoint.transform.position, startingPoint.transform.rotation);
+        _positionStartGun = startingPoint.transform.position;
+        _rotationStartGun = startingPoint.transform.rotation;
+
         _balloonsTable = GameObject.FindGameObjectsWithTag("Ballon");
         _numberBalloonTotal = _balloonsTable.Length;
 
-        // Mettre le meilleur temps au démarrage
         if (PlayerPrefs.HasKey("BestTime"))
         {
             float bestTime = PlayerPrefs.GetFloat("BestTime");
-            Debug.Log($"Meilleur temps actuel : {bestTime:F3}s");
             EventUpdateTime?.Invoke(bestTime);
-        }
-        else
-        {
-            Debug.Log("Aucun meilleur temps enregistré.");
         }
     }
 
@@ -75,7 +76,6 @@ public class BallonShooter_GameManager : MonoBehaviour
 
             if (tempsFinal <= 0f)
             {
-                Debug.Log("Temps final nul, enregistrement ignoré.");
                 return;
             }
 
@@ -85,7 +85,6 @@ public class BallonShooter_GameManager : MonoBehaviour
                 PlayerPrefs.SetFloat("BestTime", tempsFinal);
                 PlayerPrefs.Save();
                 EventUpdateTime?.Invoke(tempsFinal);
-                Debug.Log($"Nouveau meilleur temps enregistré : {tempsFinal:F3}s");
             }
         }
     }
@@ -93,7 +92,6 @@ public class BallonShooter_GameManager : MonoBehaviour
     public void ballonPopCount()
     {
         _numberBalloonTotal--;
-        Debug.Log($"Ballons restants : {_numberBalloonTotal}");
 
         if (_numberBalloonTotal <= 0)
         {
@@ -104,8 +102,16 @@ public class BallonShooter_GameManager : MonoBehaviour
     [ContextMenu("ResetGame")]
     public void ResetGame()
     {
-        _gun.transform.localPosition = _positionStartGun;
-        _gun.transform.localRotation = _rotationStartGun;
+        if (_gunInstance != null)
+            Destroy(_gunInstance);
+
+        GameObject startingPoint = GameObject.FindGameObjectWithTag("StartingPoint");
+        if (startingPoint == null)
+        {
+            return;
+        }
+
+        _gunInstance = Instantiate(_gunPrefab, startingPoint.transform.position, startingPoint.transform.rotation);
         _gunTaken = false;
         _timeStart = 0f;
         _timerRunning = false;
@@ -117,8 +123,6 @@ public class BallonShooter_GameManager : MonoBehaviour
         }
 
         _numberBalloonTotal = _balloonsTable.Length;
-
-        Debug.Log("Partie réinitialisée");
     }
 
     [ContextMenu("Réinitialiser le Meilleur Temps")]
@@ -126,6 +130,5 @@ public class BallonShooter_GameManager : MonoBehaviour
     {
         PlayerPrefs.DeleteKey("BestTime");
         PlayerPrefs.Save();
-        Debug.Log("Meilleur temps réinitialisé.");
     }
 }

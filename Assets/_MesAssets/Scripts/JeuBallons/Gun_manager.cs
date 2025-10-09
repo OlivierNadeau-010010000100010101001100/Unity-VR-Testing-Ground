@@ -4,13 +4,13 @@ using UnityEngine.InputSystem; // Nécessaire si tu utilises le nouveau Input Sys
 public class VRGunManager : MonoBehaviour
 {
     [Header("Gun Settings")]
-    [SerializeField] private Transform gunPoint;         // Transform du canon ou main
+    [SerializeField] private Transform gunPoint;
 
     [Header("Audio")]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip shootClip;
     
-    private string targetTag = "Ballon"; // Tag à détecter
+    private string targetTag = "Ballon";
 
 
     public void Shoot()
@@ -29,10 +29,6 @@ public class VRGunManager : MonoBehaviour
 
             if (hit.collider.CompareTag(targetTag))
             {
-                Debug.DrawRay(origin, direction * debugLength, Color.green, 1f);
-                Debug.Log($"[VR] Cible touchée : {hit.collider.name}");
-
-                // destruction de la  balloon touché
                 if (BallonShooter_GameManager.instance != null)
                 {
                     BallonShooter_GameManager.instance.ballonPopCount();

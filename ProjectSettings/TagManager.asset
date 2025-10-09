@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Bottle
   - Ballon
+  - StartingPoint
   layers:
   - Default
   - TransparentFX

@@ -15,7 +15,6 @@ public class UI_manager : MonoBehaviour
 
             float bestTime = PlayerPrefs.GetFloat("BestTime");
             _txtBestTime.text = "Meilleur Temps : " + TimeSpan.FromSeconds(bestTime).ToString(@"mm\:ss\.ff");
-            Debug.Log($"Meilleur temps actuel : {bestTime:F3}s");
         }
 
     }
