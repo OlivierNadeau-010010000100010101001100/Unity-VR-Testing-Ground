@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class BallonShooter_GameManager : MonoBehaviour
 {
-    [SerializeField] private GameObject[] _balloonsTable;
+    private GameObject[] _balloonsTable;
     [SerializeField] private GameObject _gun;
 
     private Vector3 _positionStartGun;
@@ -16,7 +16,7 @@ public class BallonShooter_GameManager : MonoBehaviour
     public float TempsDepart => _timeStart;
     public bool TimerActif => _timerRunning;
 
-    private int _numberBalloonTotal = 18;
+    private int _numberBalloonTotal;
     private bool _gunTaken = false;
 
     private void Awake()
@@ -32,10 +32,11 @@ public class BallonShooter_GameManager : MonoBehaviour
         _positionStartGun = _gun.transform.localPosition;
         _rotationStartGun = _gun.transform.localRotation;
 
-        // mettre le meilleur temps au démarrage
-        float besttemps = PlayerPrefs.GetFloat("BestTime");
-        EventUpdateTime?.Invoke(besttemps);
+        _balloonsTable = GameObject.FindGameObjectsWithTag("Ballons");
+        _numberBalloonTotal = _balloonsTable.Length;
 
+        // mettre le meilleur temps au démarrage
+        EventUpdateTime?.Invoke(PlayerPrefs.GetFloat("BestTime"));
     }
 
     public void StartTimer()
@@ -80,7 +81,7 @@ public class BallonShooter_GameManager : MonoBehaviour
     [ContextMenu("ResetGame")]
     public void ResetGame()
     {
-        _numberBalloonTotal = 18;
+        
         _gun.transform.localPosition = _positionStartGun;
         _gun.transform.localRotation = _rotationStartGun;
         _gunTaken = false;
@@ -91,6 +92,7 @@ public class BallonShooter_GameManager : MonoBehaviour
         {
             balloon.SetActive(true);
         }
+        _numberBalloonTotal = _balloonsTable.Length;
 
         Debug.Log("Partie réinitialisée");
     }

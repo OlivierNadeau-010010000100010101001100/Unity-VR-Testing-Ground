@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using System;
 
 public class UI_manager : MonoBehaviour
 {
@@ -16,6 +17,7 @@ public class UI_manager : MonoBehaviour
         BallonShooter_GameManager.instance.EventUpdateTime -= OnEventBestTime;
     }
 
+
     private void Update()
     {
         TimeSpent();
@@ -24,11 +26,12 @@ public class UI_manager : MonoBehaviour
     private void TimeSpent()
     {
         float time = Time.time - BallonShooter_GameManager.instance.TempsDepart;
-        _txtTime.text = "Votre Temps : " + time.ToString("f2");
+        _txtTime.text = "Votre Temps : " + TimeSpan.FromSeconds(time).ToString("mm\:ss\.fff");
+
     }
 
     private void OnEventBestTime(float tmps)
     {
-        _txtBestTime.text = "Meilleur Temps : " + tmps;
+        _txtBestTime.text = "Meilleur Temps : " + TimeSpan.FromSeconds(tmps).ToString("mm\:ss\.fff");
     }
 }
