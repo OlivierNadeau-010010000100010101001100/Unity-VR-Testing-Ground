@@ -1,8 +1,9 @@
 using UnityEngine;
+using System.Collections;
 
 public class BallonPop : MonoBehaviour
 {
-    [Header("Son à jouer à la destruction")]
+    [Header("SFX")]
     public AudioClip destructionSound;
 
     [Range(0f, 1f)]
@@ -12,9 +13,9 @@ public class BallonPop : MonoBehaviour
     {
         if (destructionSound != null)
         {
-            // Joue le son à la position actuelle de l'objet
             AudioSource.PlayClipAtPoint(destructionSound, transform.position, volume);
-            gameObject.SetActive(false);
         }
+
+        gameObject.SetActive(false);
     }
 }

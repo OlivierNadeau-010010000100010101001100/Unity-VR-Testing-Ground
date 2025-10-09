@@ -3,28 +3,34 @@ using UnityEngine;
 
 public class BallonShooter_GameManager : MonoBehaviour
 {
-    private GameObject[] _balloonsTable;
     [SerializeField] private GameObject _gun;
+
+    private GameObject[] _balloonsTable;
 
     private Vector3 _positionStartGun;
     private Quaternion _rotationStartGun;
 
-    public static BallonShooter_GameManager instance;
-
     private float _timeStart;
+    private float _timeEnd;
     private bool _timerRunning = false;
-    public float TempsDepart => _timeStart;
-    public bool TimerActif => _timerRunning;
 
     private int _numberBalloonTotal;
     private bool _gunTaken = false;
+
+    public float TempsDepart => _timeStart;
+    public float TempsFin => _timeEnd;
+    public bool TimerActif => _timerRunning;
+
+    public event Action<float> EventUpdateTime;
+
+    public static BallonShooter_GameManager instance;
 
     private void Awake()
     {
         if (instance == null)
             instance = this;
         else
-            Destroy(this);
+            Destroy(gameObject);
     }
 
     private void Start()
@@ -32,11 +38,21 @@ public class BallonShooter_GameManager : MonoBehaviour
         _positionStartGun = _gun.transform.localPosition;
         _rotationStartGun = _gun.transform.localRotation;
 
-        _balloonsTable = GameObject.FindGameObjectsWithTag("Ballons");
+        // Récupère tous les ballons avec le tag "Ballon"
+        _balloonsTable = GameObject.FindGameObjectsWithTag("Ballon");
         _numberBalloonTotal = _balloonsTable.Length;
 
-        // mettre le meilleur temps au démarrage
-        EventUpdateTime?.Invoke(PlayerPrefs.GetFloat("BestTime"));
+        // Mettre le meilleur temps au démarrage
+        if (PlayerPrefs.HasKey("BestTime"))
+        {
+            float bestTime = PlayerPrefs.GetFloat("BestTime");
+            Debug.Log($"Meilleur temps actuel : {bestTime:F3}s");
+            EventUpdateTime?.Invoke(bestTime);
+        }
+        else
+        {
+            Debug.Log("Aucun meilleur temps enregistré.");
+        }
     }
 
     public void StartTimer()
@@ -55,14 +71,21 @@ public class BallonShooter_GameManager : MonoBehaviour
         {
             _timerRunning = false;
             float tempsFinal = Time.time - _timeStart;
+            _timeEnd = tempsFinal;
 
-            // Vérifie et sauvegarde le meilleur temps
+            if (tempsFinal <= 0f)
+            {
+                Debug.Log("Temps final nul, enregistrement ignoré.");
+                return;
+            }
+
             float meilleurTemps = PlayerPrefs.GetFloat("BestTime", float.MaxValue);
-            if (tempsFinal < meilleurTemps)
+            if (!PlayerPrefs.HasKey("BestTime") || tempsFinal < meilleurTemps)
             {
                 PlayerPrefs.SetFloat("BestTime", tempsFinal);
                 PlayerPrefs.Save();
                 EventUpdateTime?.Invoke(tempsFinal);
+                Debug.Log($"Nouveau meilleur temps enregistré : {tempsFinal:F3}s");
             }
         }
     }
@@ -81,7 +104,6 @@ public class BallonShooter_GameManager : MonoBehaviour
     [ContextMenu("ResetGame")]
     public void ResetGame()
     {
-        
         _gun.transform.localPosition = _positionStartGun;
         _gun.transform.localRotation = _rotationStartGun;
         _gunTaken = false;
@@ -90,12 +112,20 @@ public class BallonShooter_GameManager : MonoBehaviour
 
         foreach (var balloon in _balloonsTable)
         {
-            balloon.SetActive(true);
+            if (balloon != null)
+                balloon.SetActive(true);
         }
+
         _numberBalloonTotal = _balloonsTable.Length;
 
         Debug.Log("Partie réinitialisée");
     }
 
-    public event Action<float> EventUpdateTime;
+    [ContextMenu("Réinitialiser le Meilleur Temps")]
+    private void ResetBestTime()
+    {
+        PlayerPrefs.DeleteKey("BestTime");
+        PlayerPrefs.Save();
+        Debug.Log("Meilleur temps réinitialisé.");
+    }
 }

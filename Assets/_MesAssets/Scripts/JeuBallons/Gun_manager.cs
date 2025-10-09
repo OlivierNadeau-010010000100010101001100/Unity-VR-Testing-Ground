@@ -5,11 +5,13 @@ public class VRGunManager : MonoBehaviour
 {
     [Header("Gun Settings")]
     [SerializeField] private Transform gunPoint;         // Transform du canon ou main
-    [SerializeField] private string targetTag = "Ballons"; // Tag à détecter
 
     [Header("Audio")]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip shootClip;
+    
+    private string targetTag = "Ballon"; // Tag à détecter
+
 
     public void Shoot()
     {
